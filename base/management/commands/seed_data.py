@@ -27,14 +27,15 @@ class Command(BaseCommand):
         else:
             self.stdout.write(f'Admin user {admin_email} already exists.')
 
-        # 2. Seed products
+        # 2. Seed and sanitize products
         created_count = 0
         for item in products:
+            clean_image = item['image'].replace('/images/', '').lstrip('/')
             product, prod_created = Product.objects.get_or_create(
                 name=item['name'],
                 defaults={
                     'user': admin_user,
-                    'image': item['image'],
+                    'image': clean_image,
                     'brand': item['brand'],
                     'category': item['category'],
                     'description': item['description'],
@@ -46,5 +47,17 @@ class Command(BaseCommand):
             )
             if prod_created:
                 created_count += 1
+            else:
+                # Update image if corrupted with duplicate path
+                if product.image != clean_image:
+                    product.image = clean_image
+                    product.save()
 
-        self.stdout.write(self.style.SUCCESS(f'Successfully seeded {created_count} new product(s).'))
+        # Sanitize any remaining products in DB
+        for p in Product.objects.all():
+            img_str = str(p.image)
+            if '/images/' in img_str:
+                p.image = img_str.replace('/images/', '').lstrip('/')
+                p.save()
+
+        self.stdout.write(self.style.SUCCESS(f'Successfully processed products (seeded {created_count} new).'))

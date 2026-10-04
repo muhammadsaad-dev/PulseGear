@@ -97,6 +97,10 @@ function ProductScreen() {
                   src={product.image}
                   alt={product.name}
                   className="max-h-full max-w-full object-contain"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null
+                    e.currentTarget.src = '/images/placeholder.png'
+                  }}
                 />
                 <button
                   onClick={() => toggleWishlist(product)}

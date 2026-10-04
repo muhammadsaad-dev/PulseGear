@@ -78,6 +78,10 @@ function ProductCarousel() {
               src={currentProduct.image}
               alt={currentProduct.name}
               className="max-h-full max-w-full object-contain"
+              onError={(e) => {
+                e.currentTarget.onerror = null
+                e.currentTarget.src = '/images/placeholder.png'
+              }}
             />
           </Link>
         </div>

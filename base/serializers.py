@@ -47,10 +47,25 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     reviews = serializers.SerializerMethodField(read_only=True)
+    image = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Product
         fields = '__all__'
+
+    def get_image(self, obj):
+        if not obj.image:
+            return '/images/placeholder.png'
+        try:
+            url = str(obj.image.url if hasattr(obj.image, 'url') else obj.image)
+        except Exception:
+            url = str(obj.image)
+
+        while '/images/images/' in url:
+            url = url.replace('/images/images/', '/images/')
+        if not url.startswith('/images/') and not url.startswith('http'):
+            url = f'/images/{url.lstrip("/")}'
+        return url
 
     def get_reviews(self, obj):
         reviews = obj.review_set.all()

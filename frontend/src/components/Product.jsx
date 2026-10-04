@@ -64,6 +64,10 @@ function Product({ product }) {
           alt={product.name}
           className="absolute inset-0 w-full h-full object-contain p-5 group-hover:scale-103 transition-transform duration-300"
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null
+            e.currentTarget.src = '/images/placeholder.png'
+          }}
         />
       </Link>
 
