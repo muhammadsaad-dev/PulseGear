@@ -1,0 +1,54 @@
+"""backend URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/3.1/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.contrib import admin
+from django.urls import path, include, re_path
+
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic import TemplateView
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+
+    # Application APIs
+    path('api/products/', include('base.urls.product_urls')),
+    path('api/users/', include('base.urls.user_urls')),
+    path('api/orders/', include('base.urls.order_urls')),
+]
+
+try:
+    from drf_spectacular.views import (
+        SpectacularAPIView,
+        SpectacularSwaggerView,
+        SpectacularRedocView,
+    )
+    urlpatterns += [
+        path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+        path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+        path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    ]
+except ImportError:
+    pass
+
+urlpatterns += static('/assets/', document_root=settings.BASE_DIR / 'frontend/build/assets')
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# SPA fallback: Catch-all to serve index.html for frontend client routes
+urlpatterns += [
+    re_path(r'^(?!api/|admin/|assets/|images/|static/).*$', TemplateView.as_view(template_name='index.html')),
+]
+

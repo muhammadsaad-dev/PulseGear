@@ -1,0 +1,27 @@
+# Virtual Environments
+venv/
+myenv/
+env/
+ENV/
+.env
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+
+# Node & Frontend
+node_modules/
+frontend/node_modules/
+.eslintcache
+frontend/.eslintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+
+# System & IDE
+.DS_Store
+.vscode/
+.idea/
